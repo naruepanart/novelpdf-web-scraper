@@ -63,7 +63,6 @@ func scrapeContent(c *colly.Collector, url string) (string, string, error) {
 	// Set up callback for chapter heading
 	c.OnHTML(chapterHeadingSelector, func(e *colly.HTMLElement) {
 		title = e.Text
-		log.Println(title)
 	})
 
 	// Set up callback for content
