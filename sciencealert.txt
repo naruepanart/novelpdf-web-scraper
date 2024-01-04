@@ -1,0 +1,32 @@
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/gocolly/colly/v2"
+)
+
+func main() {
+	c := colly.NewCollector()
+
+	// Set up callback for when a visited HTML element is found
+	c.OnHTML("div.entry-content.pt-4 > div > p", func(e *colly.HTMLElement) {
+		title := e.Text
+		fmt.Println(title)
+	})
+
+	// Array of 10 URLs
+	urls := []string{
+		"https://www.sciencealert.com/chemical-produced-by-gut-microbes-seems-to-prevent-obesity-in-mice",
+		//"https://www.sciencealert.com/straight-men-with-bisexual-genes-have-more-kids-study-finds",
+	}
+
+	// Visit each URL in the array
+	for _, url := range urls {
+		err := c.Visit(url)
+		if err != nil {
+			log.Printf("Error visiting URL %s: %v", url, err)
+		}
+	}
+}
