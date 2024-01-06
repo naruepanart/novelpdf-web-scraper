@@ -77,11 +77,8 @@ func main() {
 				}
 
 				// Create the "output" folder if it doesn't exist
-				if _, err := os.Stat(outputFolder); os.IsNotExist(err) {
-					err := os.Mkdir(outputFolder, 0755)
-					if err != nil {
-						log.Fatal(err)
-					}
+				if err := os.MkdirAll(outputFolder, 0755); err != nil {
+					log.Fatal(err)
 				}
 
 				// Create and open a new file in the "output" folder for writing
@@ -90,10 +87,10 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				defer file.Close()
 
 				// Write the scraped content to the file
 				file.WriteString(content)
+				file.Close()
 
 				log.Println("Data has been written to", filePath)
 			}
