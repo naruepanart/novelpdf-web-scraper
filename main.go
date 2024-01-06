@@ -82,7 +82,8 @@ func main() {
 				}
 
 				// Create and open a new file in the "output" folder for writing
-				filePath := filepath.Join(outputFolder, title+".txt")
+				sanitizedTitle := sanitizeTitle(title)
+				filePath := filepath.Join(outputFolder, sanitizedTitle+".txt")
 				file, err := os.Create(filePath)
 				if err != nil {
 					log.Fatal(err)
@@ -101,4 +102,17 @@ func main() {
 	wg.Wait()
 
 	log.Println("All data has been processed.")
+}
+
+func sanitizeTitle(title string) string {
+	// Replace invalid characters with underscores
+	invalidChars := []string{"/", "\\", ":", "*", "?", "\"", "<", ">", "|"}
+	for _, char := range invalidChars {
+		title = strings.ReplaceAll(title, char, "_")
+	}
+
+	// Trim leading and trailing whitespaces
+	title = strings.TrimSpace(title)
+
+	return title
 }
