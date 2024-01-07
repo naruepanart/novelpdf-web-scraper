@@ -2,26 +2,31 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/gocolly/colly/v2"
 	"log"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"sync"
-
-	"github.com/gocolly/colly/v2"
 )
 
 const (
 	chapterHeadingSelector = "#chapter-heading"
 	contentSelector        = "body > div.wrap > div > div.site-content > div > div > div > div > div > div > div.c-blog-post > div.entry-content > div > div > div.reading-content > div.text-left > p"
-	outputFolder            = "output"
-	urlsFile                = "urls.json"
+	outputFolder           = "output"
+	urlsFile               = "urls.json"
 	concurrentWorkers      = 5
 )
 
 var wg sync.WaitGroup
 
 func main() {
+	// Set a memory limit of 90 MB (soft limit)
+	debug.SetMemoryLimit(90 * 1024 * 1024)
+	// Delay garbage collection slightly to reduce CPU overhead
+	debug.SetGCPercent(50)
+
 	c := colly.NewCollector()
 
 	// Read URLs from JSON file
