@@ -16,16 +16,14 @@ const (
 	contentSelector        = "body > div.wrap > div > div.site-content > div > div > div > div > div > div > div.c-blog-post > div.entry-content > div > div > div.reading-content > div.text-left > p"
 	outputFolder           = "output"
 	urlsFile               = "urls.json"
-	concurrentWorkers      = 5
+	concurrentWorkers      = 10
 )
 
 var wg sync.WaitGroup
 
 func main() {
-	// Set a memory limit of 90 MB (soft limit)
-	debug.SetMemoryLimit(90 * 1024 * 1024)
-	// Delay garbage collection slightly to reduce CPU overhead
-	debug.SetGCPercent(50)
+	// Set a memory limit of 100 MB (soft limit)
+	debug.SetMemoryLimit(100 * 1024 * 1024)
 
 	c := colly.NewCollector()
 
@@ -59,20 +57,23 @@ func main() {
 			// Each worker has its own collector
 			wc := c.Clone()
 
+			var title, content string
+
+			// Set up callback for chapter heading
+			wc.OnHTML(chapterHeadingSelector, func(e *colly.HTMLElement) {
+				title = e.Text
+				log.Println(title)
+			})
+
+			// Set up callback for content
+			wc.OnHTML(contentSelector, func(e *colly.HTMLElement) {
+				trimmedText := strings.TrimSpace(e.Text)
+				content += trimmedText + "\n"
+			})
+
 			for url := range urlsChannel {
-				var title, content string
-
-				// Set up callback for chapter heading
-				wc.OnHTML(chapterHeadingSelector, func(e *colly.HTMLElement) {
-					title = e.Text
-					log.Println(title)
-				})
-
-				// Set up callback for content
-				wc.OnHTML(contentSelector, func(e *colly.HTMLElement) {
-					trimmedText := strings.TrimSpace(e.Text)
-					content += trimmedText + "\n"
-				})
+				// Reset title and content for each iteration
+				title, content = "", ""
 
 				// Visit the URL
 				err := wc.Visit(url)
