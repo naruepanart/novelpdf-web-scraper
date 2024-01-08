@@ -37,3 +37,30 @@ func main() {
 
 	fmt.Println("JSON data saved to urls.json")
 }
+
+
+/* package main
+
+import (
+	"fmt"
+
+	"github.com/gocolly/colly/v2"
+)
+
+func main() {
+	c := colly.NewCollector()
+
+	c.OnHTML(".titleline > a", func(e *colly.HTMLElement) {
+		title := e.Text
+		links1 := e.Attr("href")
+		fmt.Println(title, links1)
+	})
+
+	c.OnHTML(".titleline", func(e *colly.HTMLElement) {
+		title := e.Text
+		links1 := e.ChildAttr("a", "href")
+		fmt.Println(title, links1)
+	})
+
+	c.Visit("https://news.ycombinator.com/news")
+} */
